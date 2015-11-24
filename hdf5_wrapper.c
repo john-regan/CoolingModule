@@ -1,4 +1,5 @@
-#include "allvars.h"
+#include "cooling_params.h"
+#include "hdf5_wrapper.h"
 #include <stdlib.h>
 #include <hdf5.h>
 /*! \file hdf5_wrapper.c
@@ -7,6 +8,8 @@
 /*! read an attribute "attribute_name" of hdf5 type  "hdf5_type" from file handle 
  *  
  */
+
+#ifdef LEAVE
 herr_t attribute_read(char *attribute_name,  enum my_hdf5_types hdf5_type,
 		      hid_t hdf5_file_handle, void *buf)
 {
@@ -61,6 +64,7 @@ herr_t attribute_read(char *attribute_name,  enum my_hdf5_types hdf5_type,
 
   return hdf5_status;
 }
+#endif
 
 herr_t dataset_read(char *dataset_name,  int hdf5_type,  hid_t hdf5_file_handle, void *buf)
 {
@@ -70,24 +74,24 @@ herr_t dataset_read(char *dataset_name,  int hdf5_type,  hid_t hdf5_file_handle,
   /* datatype = H5Tcopy(H5T_C_S1); */
   /* status = H5Tset_size(datatype, dataset_size); */
   hdf5_dataset_id = H5Dopen(hdf5_file_handle, dataset_name);
-  //if(!hdf5_status){
-  //printf("Error with opening dataset\n");
-  // exit(-1);
-  //}
+  if(hdf5_status){
+  printf("Error with opening dataset\n");
+  exit(-1);
+  }
 
 
   switch (hdf5_type)
     {
-    case 0:
+    case INT:
 		hdf5_status = H5Dread(hdf5_dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (int *) buf);
       break;
-    case 1:
+    case LONG:
 		hdf5_status = H5Dread(hdf5_dataset_id, H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, (long *) buf);
       break;
-    case 2:
+    case FLOAT:
 		hdf5_status = H5Dread(hdf5_dataset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (float *) buf);
       break;
-    case 3:
+    case DOUBLE:
 		hdf5_status = H5Dread(hdf5_dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *) buf);
       break;
     default:
