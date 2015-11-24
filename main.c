@@ -174,14 +174,29 @@ int main(){
 
   status = H5Fclose(file_id); //close the file
   
-  
+  /*Now let's create another 'interpolated' cooling table*/
 
+  float interpol_net_cooling_rate[COOL_TABLE_N_H_BINS][COOL_TABLE_TEMP_BINS][COOL_TABLE_HE_BINS];
+ 
+  i=0;
+  int j =0;
+  int k =0;
+
+  for (i=0;i<COOL_TABLE_N_H_BINS-1;i++){
+    for (j=0;j<COOL_TABLE_TEMP_BINS-1;j++){
+      for (k=0;k<COOL_TABLE_HE_BINS-1;k++){
+	interpol_net_cooling_rate[i][j][k]=(1.0-(dz/(z_2-z_1)))*ct_1->net_cooling_rate[i][j][k]+(dz/(z_2-z_1))*ct_2->net_cooling_rate[i][j][k];
+      }
+    }
+  }
+    
 
 
   //now we have some arrays we can perform operations on them
   
-  printf("TEST:\n N_H IS: %.5e\n TEMPERATURE IS: %.5e\n HE_FRAC IS: %.5e\n LAMBDA IS %.5e\n",ct_1->n_h_bins[20],ct_1->temp_bins[100],ct_1->he_frac_bins[5], ct_1->net_cooling_rate[5][100][20]);
-  printf("TEST:\n N_H IS: %.5e\n TEMPERATURE IS: %.5e\n HE_FRAC IS: %.5e\n LAMBDA IS %.5e\n",ct_2->n_h_bins[20],ct_2->temp_bins[100],ct_2->he_frac_bins[5], ct_2->net_cooling_rate[5][100][20]);
+  printf("At z_1 (%1.3f) :\n N_H IS: %.5e\n TEMPERATURE IS: %.5e\n HE_FRAC IS: %.5e\n LAMBDA IS %.5e\n",z_1,ct_1->n_h_bins[20],ct_1->temp_bins[100],ct_1->he_frac_bins[5], ct_1->net_cooling_rate[20][100][5]);
+  printf("At z_2 (%1.3f) :\n N_H IS: %.5e\n TEMPERATURE IS: %.5e\n HE_FRAC IS: %.5e\n LAMBDA IS %.5e\n",z_2,ct_2->n_h_bins[20],ct_2->temp_bins[100],ct_2->he_frac_bins[5], ct_2->net_cooling_rate[20][100][5]);
+  printf("Interpolation test\n At redshift %1.3f:\n N_H IS: %.5e\n TEMPERATURE IS: %.5e\n HE_FRAC IS: %.5e\n LAMBDA IS %.5e\n",z,ct_2->n_h_bins[20],ct_2->temp_bins[100],ct_2->he_frac_bins[5], interpol_net_cooling_rate[20][100][5]);
   exit(0);
 
 
